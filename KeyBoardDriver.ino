@@ -98,7 +98,7 @@ void loop() {
   int ledPin = getLedPin(Current_Lit_Led);  
   digitalWrite(ledPin, LOW);
   
-  if(Current_Lit_Led + 1 < 8){
+  if(Current_Lit_Led + 1 <= 8){
     Current_Lit_Led++;
     switchLed(Current_Lit_Led);
   }
