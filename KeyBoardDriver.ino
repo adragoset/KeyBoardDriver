@@ -1,8 +1,11 @@
+
+
 #include <Wire.h>
 
-const int PWM_Red = 23;
-const int PWM_Green = 22;
-const int PWM_Blue = 21;
+
+const int PWM_Red = 22;
+const int PWM_Green = 21;
+const int PWM_Blue =  23;
 
 const int Board_Led = 13;
 const int Led_1 = 15;
@@ -41,7 +44,7 @@ int Button_Colors [8][3] = {
   }
 };
 
-int Current_Lit_Led = 1;
+int Current_Lit_Led = 0;
 int Board_Flash_Counter = 0;
 boolean Board_Led_State = false;
 
@@ -49,7 +52,7 @@ void setup() {
   Wire.begin(9);                // Start I2C Bus as a Slave (Device Number 9)
   Wire.onReceive(receiveEvent); // register event
 
-  pinMode(PWM_Red, OUTPUT);
+    pinMode(PWM_Red, OUTPUT);
   pinMode(PWM_Green, OUTPUT);
   pinMode(PWM_Blue, OUTPUT);
   analogWrite(PWM_Red, 0);
@@ -76,10 +79,12 @@ void setup() {
   digitalWrite(Led_7, LOW);
   digitalWrite(Led_8, LOW);
 
+  Serial.begin(9600); // USB is always 12 Mbit/sec
+
 }
 
 void loop() {
-  
+
   if(Board_Flash_Counter < 100000){
     Board_Flash_Counter++;
   }
@@ -94,10 +99,10 @@ void loop() {
     }
     Board_Flash_Counter = 0;
   }
-  
+
   int ledPin = getLedPin(Current_Lit_Led);  
   digitalWrite(ledPin, LOW);
-  
+
   if(Current_Lit_Led + 1 <= 8){
     Current_Lit_Led++;
     switchLed(Current_Lit_Led);
@@ -114,12 +119,22 @@ void receiveEvent(int howMany) {
 
   if(code < 9){
     int red = Wire.receive();  // receive byte as an integer
-    int blue = Wire.receive();
     int green = Wire.receive();
+    int blue = Wire.receive();
+    int ledAssignment = ledAssignmentMap(code);
+    Serial.print(code);
+    Serial.print(':');
+    Serial.print(red);
+    Serial.print(',');
+    Serial.print(green);
+    Serial.print(',');
+    Serial.print(blue);
+    Serial.print(',');
+    Serial.println();
 
-    Button_Colors[code - 1][0] = red;
-    Button_Colors[code - 1][1] = blue;
-    Button_Colors[code - 1][2] = green;
+    Button_Colors[ledAssignment][0] = red;
+    Button_Colors[ledAssignment][1] = green;
+    Button_Colors[ledAssignment][2] = blue;
   }
   else{
     while(Wire.available()){
@@ -129,9 +144,20 @@ void receiveEvent(int howMany) {
       int blue = Wire.receive();
       int green = Wire.receive();
 
-      Button_Colors[led - 1][0] = red;
-      Button_Colors[led - 1][1] = blue;
-      Button_Colors[led - 1][2] = green;
+      Serial.print(led);
+      Serial.print(':');
+      Serial.print(red);
+      Serial.print(',');
+      Serial.print(green);
+      Serial.print(',');
+      Serial.print(blue);
+      Serial.print(',');
+      Serial.println();
+      
+      int ledAssignment = ledAssignmentMap(led);
+      Button_Colors[ledAssignment][0] = red;
+      Button_Colors[ledAssignment][1] = green;
+      Button_Colors[ledAssignment][2] = blue;
     }
   }
 }
@@ -139,8 +165,8 @@ void receiveEvent(int howMany) {
 void switchLed(int led){
   int ledPin = getLedPin(Current_Lit_Led);
   int red = Button_Colors [Current_Lit_Led - 1][0];
-  int blue = Button_Colors [Current_Lit_Led - 1][1];
-  int green = Button_Colors [Current_Lit_Led - 1][2];
+  int green = Button_Colors [Current_Lit_Led - 1][1];
+  int blue = Button_Colors [Current_Lit_Led - 1][2];
   analogWrite(PWM_Red, red);
   analogWrite(PWM_Green, blue);
   analogWrite(PWM_Blue, green);
@@ -178,6 +204,41 @@ int getLedPin(int led){
     return Led_1;
   }
 }
+
+int ledAssignmentMap(int led){
+  switch ( led )
+  {
+  case 1:
+    return 0;
+    break;
+  case 2:
+    return 1;
+    break;
+  case 3:
+    return 6;
+    break;
+  case 4:
+    return 3;
+    break;
+  case 5:
+    return 5;
+    break;
+  case 6:
+    return 2;
+    break;
+  case 7:
+    return 4;
+    break;
+  case 8:
+    return 7;
+    break;
+  default:
+    return 0;
+  }
+}
+
+
+
 
 
 
