@@ -4,8 +4,8 @@
 
 
 const int PWM_Red = 22;
-const int PWM_Green = 21;
-const int PWM_Blue =  23;
+const int PWM_Green = 23;
+const int PWM_Blue =  21;
 
 const int Board_Led = 13;
 const int Led_1 = 15;
@@ -168,8 +168,8 @@ void switchLed(int led){
   int green = Button_Colors [Current_Lit_Led - 1][1];
   int blue = Button_Colors [Current_Lit_Led - 1][2];
   analogWrite(PWM_Red, red);
-  analogWrite(PWM_Green, blue);
-  analogWrite(PWM_Blue, green);
+  analogWrite(PWM_Green, blue * .6);
+  analogWrite(PWM_Blue, green * .6);
   digitalWrite(ledPin, HIGH);
 }
 
@@ -209,19 +209,19 @@ int ledAssignmentMap(int led){
   switch ( led )
   {
   case 1:
-    return 0;
+    return 7;
     break;
   case 2:
-    return 1;
+    return 0;
     break;
   case 3:
     return 6;
     break;
   case 4:
-    return 3;
+    return 5;
     break;
   case 5:
-    return 5;
+    return 1;
     break;
   case 6:
     return 2;
@@ -230,7 +230,7 @@ int ledAssignmentMap(int led){
     return 4;
     break;
   case 8:
-    return 7;
+    return 3;
     break;
   default:
     return 0;
