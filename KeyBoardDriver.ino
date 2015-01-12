@@ -168,8 +168,8 @@ void switchLed(int led){
   int green = Button_Colors [Current_Lit_Led - 1][1];
   int blue = Button_Colors [Current_Lit_Led - 1][2];
   analogWrite(PWM_Red, red);
-  analogWrite(PWM_Green, blue * .6);
-  analogWrite(PWM_Blue, green * .6);
+  analogWrite(PWM_Green, blue * .8);
+  analogWrite(PWM_Blue, green * .5);
   digitalWrite(ledPin, HIGH);
 }
 
