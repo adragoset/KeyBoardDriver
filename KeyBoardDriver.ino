@@ -56,8 +56,13 @@ void setup() {
   pinMode(PWM_Green, OUTPUT);
   pinMode(PWM_Blue, OUTPUT);
   analogWrite(PWM_Red, 0);
+  analogWriteFrequency(PWM_Red, 187500);
   analogWrite(PWM_Green, 0);
+  analogWriteFrequency(PWM_Green, 187500);
   analogWrite(PWM_Blue, 0);
+  analogWriteFrequency(PWM_Blue, 187500);
+  
+  analogWriteResolution(8);
 
   pinMode(Board_Led, OUTPUT);
   pinMode(Led_1, OUTPUT);
@@ -111,7 +116,7 @@ void loop() {
     Current_Lit_Led = 1;
     switchLed(Current_Lit_Led);
   }
-
+  delayMicroseconds(50);
 }
 
 void receiveEvent(int howMany) {
@@ -122,15 +127,7 @@ void receiveEvent(int howMany) {
     int green = Wire.receive();
     int blue = Wire.receive();
     int ledAssignment = ledAssignmentMap(code);
-    Serial.print(code);
-    Serial.print(':');
-    Serial.print(red);
-    Serial.print(',');
-    Serial.print(green);
-    Serial.print(',');
-    Serial.print(blue);
-    Serial.print(',');
-    Serial.println();
+    
 
     Button_Colors[ledAssignment][0] = red;
     Button_Colors[ledAssignment][1] = green;
@@ -143,16 +140,6 @@ void receiveEvent(int howMany) {
       int red = Wire.receive();  // receive byte as an integer
       int blue = Wire.receive();
       int green = Wire.receive();
-
-      Serial.print(led);
-      Serial.print(':');
-      Serial.print(red);
-      Serial.print(',');
-      Serial.print(green);
-      Serial.print(',');
-      Serial.print(blue);
-      Serial.print(',');
-      Serial.println();
       
       int ledAssignment = ledAssignmentMap(led);
       Button_Colors[ledAssignment][0] = red;
@@ -168,8 +155,8 @@ void switchLed(int led){
   int green = Button_Colors [Current_Lit_Led - 1][1];
   int blue = Button_Colors [Current_Lit_Led - 1][2];
   analogWrite(PWM_Red, red);
-  analogWrite(PWM_Green, blue * .8);
-  analogWrite(PWM_Blue, green * .5);
+  analogWrite(PWM_Green, blue * .7);
+  analogWrite(PWM_Blue, green * .4);
   digitalWrite(ledPin, HIGH);
 }
 
